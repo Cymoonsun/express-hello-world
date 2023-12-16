@@ -8,7 +8,7 @@ async function getRandomNumber() {
       console.error('Error fetching random number:', error);
     }
   }
-(async ()=>{
+async function getUser (){
     try {
         const response = await fetch('https://jffun.cyclic.app/getUser');
         console.log(response)
@@ -17,4 +17,4 @@ async function getRandomNumber() {
       } catch (error) {
         console.error('Error fetching random number:', error);
       }
-})()
+}
