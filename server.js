@@ -4,7 +4,7 @@ const path = require("path")
 const Redis = require("redis")
 const port = 3000;
 
-const redisClient = await Redis.createClient().connect()
+const redisClient = Redis.createClient().connect()
 const expire = 3600
 
 app.use(express.static(path.join(__dirname+"/public")))
