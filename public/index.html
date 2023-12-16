@@ -14,18 +14,6 @@
         <h1>Random Number Generator</h1>
         <button onclick="getRandomNumber()">Get Random Number</button>
         <p id="randomNumber"></p>
-
-        <script>
-          async function getRandomNumber() {
-            try {
-              const response = await fetch('https://jffun.cyclic.app/getRandomNumber');
-              const data = await response.json();
-              document.getElementById('randomNumber').innerText = `Random Number: ${data.randomNumber}`;
-            } catch (error) {
-              console.error('Error fetching random number:', error);
-            }
-          }
-        </script>
         <div id="world">
           <canvas id='rotatingGlobe' style='cursor: move;'></canvas>
         </div>
@@ -38,5 +26,6 @@
     <script src="//cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
     <script type='text/javascript' src='particles.js'></script>
     <script type='text/javascript' src='globe.js'></script>
+    <script src="./script.js"></script>
   </body>
 </html>
