@@ -1,7 +1,7 @@
 
 async function getRandomNumber() {
     try {
-      const response = await fetch('https://jffun.cyclic.app/getRandomNumber');
+      const response = await fetch('https://jffun.cyclic.app/getText');
       const data = await response.json();
       document.getElementById('randomNumber').innerText = `Random Number: ${data.randomNumber}`;
     } catch (error) {
