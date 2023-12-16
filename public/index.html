@@ -11,12 +11,21 @@
     <div id="hello-wrapper">
       <div id="particles-js"></div>
       <div class="content position-absolute w-100 top-0 pt-5">
-        <div class="cta">
-          <div id="hello" class="typewriter pb-3">
-            Hello World!
-          </div>
-          <a class="btn btn-primary mb-5" href="//app.cyclic.sh/api/login">Sign in to Cyclic</a>
-        </div>
+        <h1>Random Number Generator</h1>
+        <button onclick="getRandomNumber()">Get Random Number</button>
+        <p id="randomNumber"></p>
+
+        <script>
+          async function getRandomNumber() {
+            try {
+              const response = await fetch('http://localhost:3000/getRandomNumber');
+              const data = await response.json();
+              document.getElementById('randomNumber').innerText = `Random Number: ${data.randomNumber}`;
+            } catch (error) {
+              console.error('Error fetching random number:', error);
+            }
+          }
+        </script>
         <div id="world">
           <canvas id='rotatingGlobe' style='cursor: move;'></canvas>
         </div>
