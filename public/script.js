@@ -15,6 +15,16 @@ async function getUser (){
         const resText = await response.json()
         console.log(resText)
       } catch (error) {
-        console.error('Error fetching random number:', error);
+        console.error(error);
       }
+}
+async function getString (){
+  try {
+      const response = await fetch('https://jffun.cyclic.app/getString');
+      console.log(response)
+      const resText = await response.text()
+      console.log(resText)
+    } catch (error) {
+      console.error(error);
+    }
 }
