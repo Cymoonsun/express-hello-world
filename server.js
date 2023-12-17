@@ -4,7 +4,7 @@ const path = require("path")
 const Redis = require("redis")
 const port = 3000;
 
-const redisClient = await Redis.createClient({
+const redisClient = Redis.createClient({
     password: 'q1Piyo5hnsiAdLJugFN2aUMTrhwtvRJu',
     socket: {
         host: 'redis-16643.c250.eu-central-1-1.ec2.cloud.redislabs.com',
