@@ -10,7 +10,7 @@ const redisClient = Redis.createClient({
         host: 'redis-16643.c250.eu-central-1-1.ec2.cloud.redislabs.com',
         port: 16643
     }
-});
+}).connect();
 const expire = 3600
 
 app.use(express.static(path.join(__dirname+"/public")))
@@ -37,12 +37,6 @@ app.get("/getString", (req, res)=>{
   })
 })
 
-app.listen(port, async () => {
-  try{
-    await redisClient.connect()
-  }
-  catch(err){
-    console.error(err)
-  }
+app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
