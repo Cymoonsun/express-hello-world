@@ -20,7 +20,7 @@ app.get("/getText", (req, res) => {
 });
 
 app.get("/getUser", (req, res)=>{
- redisClient.get("myUser", (err, user)=>{
+ redisClient.hGet("myUser", (err, user)=>{
       if (err) console.error(err)
       if(user != null){
         res.json(JSON.parse(user))
