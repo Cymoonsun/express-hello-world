@@ -28,12 +28,15 @@ app.get("/getUser", (req, res)=>{
   })
 })
 
+redisClient.connect().catch(err => {
+  console.error('Error connecting to Redis:', err);
+});
+
 redisClient.on('error', (err) => {
   console.log('Redis error: ', err);
 });
 
 app.get('/getString', (req, res) => {
-  // Replace 'your_key' with the key you want to get from Redis
   const key = 'test';
 
   redisClient.get(key, (err, reply) => {
