@@ -30,7 +30,10 @@ app.get("/getUser", (req, res)=>{
 
 app.get("/getString", (req, res)=>{
   redisClient.get("test", (err, data)=>{
-    res.send(data)
+    if (err) console.error(err)
+    if(data != null){
+      res.send(data)
+    }
   })
 })
 
