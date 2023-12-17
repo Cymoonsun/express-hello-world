@@ -10,7 +10,7 @@ const redisClient = Redis.createClient({
         host: 'redis-16643.c250.eu-central-1-1.ec2.cloud.redislabs.com',
         port: 16643
     }
-}).connect();
+});
 const expire = 3600
 
 app.use(express.static(path.join(__dirname+"/public")))
@@ -28,14 +28,22 @@ app.get("/getUser", (req, res)=>{
   })
 })
 
-app.get("/getString", (req, res)=>{
-  redisClient.get("test", (err, data)=>{
-    if (err) console.error(err)
-    if(data != null){
-      res.send(data)
-    }
-  })
-})
+redisClient.on('error', (err) => {
+  console.log('Redis error: ', err);
+});
+
+app.get('/getString', (req, res) => {
+  // Replace 'your_key' with the key you want to get from Redis
+  const key = 'test';
+
+  redisClient.get(key, (err, reply) => {
+      if (err) {
+          res.status(500).send('Error retrieving data from Redis');
+      } else {
+          res.send(reply);
+      }
+  });
+});
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
