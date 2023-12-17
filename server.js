@@ -28,7 +28,7 @@ app.get("/getUser", (req, res)=>{
   })
 })
 
-redisClient.connect().catch(err => {
+redisClient.connect().then(res=>{console.log(res)}).catch(err => {
   console.error('Error connecting to Redis:', err);
 });
 
