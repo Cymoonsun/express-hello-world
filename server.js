@@ -2,13 +2,31 @@ const express = require("express");
 const app = express();
 const path = require("path")
 const { MongoClient } = require("mongodb")
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+const expressSession = require('express-session');
 const port = 3000;
 
 app.use(express.static(path.join(__dirname+"/public")))
 
+//passport stuff
+app.use(expressSession({ secret: 'your-secret-key', resave: true, saveUninitialized: true }));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.serializeUser((user, done) => {
+  done(null, user._id);
+});
+
+passport.deserializeUser((id, done) => {
+  const user = users.find(u => u.id === id);
+  done(null, user);
+});
+
 // Middleware to connect to MongoDB
 app.use((req, res, next) => {
-  const uri = '';
+  const uri = process.env.MONGO_CONNECTION_STRING;
   const client = new MongoClient(uri);
 
   client.connect()
