@@ -8,7 +8,7 @@ app.use(express.static(path.join(__dirname+"/public")))
 
 const mongoUri = "mongodb+srv://Cymoon:Cymoongo0@cluster0.zwuqr5f.mongodb.net/?retryWrites=true&w=majority"
 const client = new MongoClient(mongoUri)
-client.connect.then(()=>{
+client.connect().then(()=>{
   console.log("connected to db")
 }).catch(err => console.error('Error connecting to the database:', err));
 
