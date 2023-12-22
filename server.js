@@ -8,7 +8,7 @@ app.use(express.static(path.join(__dirname+"/public")))
 
 // Middleware to connect to MongoDB
 app.use((req, res, next) => {
-  const uri = 'mongodb+srv://Cymoon:Cymoongo0@cluster0.zwuqr5f.mongodb.net/NerdStuffMaybe?retryWrites=true&w=majority';
+  const uri = '';
   const client = new MongoClient(uri);
 
   client.connect()
