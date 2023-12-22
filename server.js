@@ -6,17 +6,37 @@ const port = 3000;
 
 app.use(express.static(path.join(__dirname+"/public")))
 
-const mongoUri = "mongodb+srv://Cymoon:Cymoongo0@cluster0.zwuqr5f.mongodb.net/?retryWrites=true&w=majority"
-const client = new MongoClient(mongoUri)
-client.connect().then(()=>{
-  console.log("connected to db")
-}).catch(err => console.error('Error connecting to the database:', err));
+// Middleware to connect to MongoDB
+app.use((req, res, next) => {
+  const uri = 'mongodb+srv://Cymoon:Cymoongo0@cluster0.zwuqr5f.mongodb.net/?retryWrites=true&w=majority';
+  const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
-app.get("/getText", (req, res) => {
-  res.send("Hello World!");
+  client.connect()
+    .then(() => {
+      // Attach the MongoDB client to the request object for later use
+      req.db = client.db(); // Attach the MongoDB database object to the request
+      next(); // Move on to the next middleware or route handler
+    })
+    .catch(err => {
+      console.error('Error connecting to the database:', err);
+      res.status(500).send('Internal Server Error');
+    });
 });
 
+app.get("/getMyboi", (req, res)=>{
+  req.db.collection('DataTest').find().toArray().then((data)=>{
+    res.json(data)
+  })
+})
 
+app.use((req, res, next) => {
+  // Close the MongoDB connection
+  if (req.db) {
+    req.db.close()
+      .then(() => console.log('MongoDB connection closed'))
+      .catch(err => console.error('Error closing MongoDB connection:', err));
+  }
+});
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
