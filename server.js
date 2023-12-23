@@ -44,7 +44,7 @@ passport.use(new LocalStrategy(
 
     client.connect()
       .then(() => {
-        return client.db().collection('users').findOne({ username, password });
+        return client.db().collection('DnDUsers').findOne({ username, password });
       })
       .then(user => {
         client.close();
