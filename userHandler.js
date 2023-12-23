@@ -1,4 +1,4 @@
-const mongo = require("mongodb")
+const {MongoClient} = require("mongodb")
 
 function mongoAction(action, info){
     const uri = process.env.MONGO_CONNECTION_STRING;
