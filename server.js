@@ -13,10 +13,10 @@ app.use(session({
 }))
 
 app.use((req, res, next)=>{
-  if(!req.session.user){
-    return res.redirect("/login")
+  if (!req.session.user && req.path !== "/login") {
+    return res.redirect("/login");
   }
-  next()
+  next();
 })
 
 app.get("/login", (req, res)=>{
@@ -25,6 +25,9 @@ app.get("/login", (req, res)=>{
 
 app.post("/login", async (req, res)=>{
   const esitoDb = await mongoAction("login", req.body)
+  req.session.user={
+    username: esitoDb.username
+  }
   res.send(`Logged as ${esitoDb ? esitoDb : "none"}`)
 })
 
