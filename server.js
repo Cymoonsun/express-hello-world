@@ -28,6 +28,6 @@ app.post("/login", async (req, res)=>{
   res.send(`Logged as ${esitoDb ? esitoDb : "none"}`)
 })
 
-application.listen(()=>{
+app.listen(()=>{
   console.log("listening "+port)
 })
