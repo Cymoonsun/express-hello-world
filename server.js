@@ -1,12 +1,13 @@
 const express = require("express");
+const app = express();
 const path = require("path");
-const passport = require('passport');
-const expressSession = require('express-session');
 const { MongoClient, ObjectId } = require("mongodb");
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+const expressSession = require('express-session');
 const authRoutes = require('./routes/authRoutes');
 const dataRoutes = require('./routes/dataRoutes');
 
-const app = express();
 const port = 3000;
 
 // Passport configuration
@@ -34,6 +35,28 @@ passport.deserializeUser((id, done) => {
       done(err, null);
     });
 });
+
+// Configure the local strategy for use by Passport
+passport.use(new LocalStrategy(
+  (username, password, done) => {
+    const uri = process.env.MONGO_CONNECTION_STRING;
+    const client = new MongoClient(uri);
+
+    client.connect()
+      .then(() => client.db().collection('users').findOne({ username, password }))
+      .then(user => {
+        client.close();
+        if (!user) {
+          return done(null, false, { message: 'Incorrect username or password.' });
+        }
+        return done(null, user);
+      })
+      .catch(err => {
+        console.error('Error authenticating user:', err);
+        done(err, false);
+      });
+  }
+));
 
 // Middleware to connect to MongoDB
 app.use((req, res, next) => {
@@ -70,7 +93,7 @@ app.get('/login', (req, res) => {
 });
 
 // Authentication route
-app.post('/login', passport.authenticate('local', { successRedirect: '/getMyboi', failureRedirect: '/login' }));
+app.post('/login', authRoutes.login);
 
 // Sample protected route
 app.get('/getMyboi', authRoutes.isLoggedIn, dataRoutes.getMyboi);
