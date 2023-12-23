@@ -1,15 +1,19 @@
 const express = require ("express")
 const session = require ("express-session")
 const path = require ("path")
+const ejs = require ("ejs")
 const mongoAction = require("./userHandler")
 const port = 3000
 
 const app = express()
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 app.use(session({
   saveUninitialized: false,
   resave: false,
-  secret: process.env.SESSION_SECRET
+  secret: process.env.SESSION_SECRET || "secretCat"
 }))
 
 app.use((req, res, next)=>{
@@ -20,17 +24,31 @@ app.use((req, res, next)=>{
 })
 
 app.get("/login", (req, res)=>{
+  if(req.session.user){
+    res.sendFile(path.join(__dirname, "public", "loggedSection.html"))
+  }
   res.sendFile(path.join(__dirname, "public", "login.html"))
 })
 
 app.post("/login", async (req, res)=>{
-  const esitoDb = await mongoAction("login", req.body)
-  esitoDb && (req.session.user={
-    username: esitoDb.username
+  mongoAction("login", req.body).then((result)=>{
+    console.log(result)
+    result && (req.session.user={
+      username: result.username
+    })
+    res.send(`Logged as ${result ? result.username : "none"}`)
   })
-  res.send(`Logged as ${esitoDb ? esitoDb.username : "none"}`)
 })
 
-app.listen(()=>{
+app.get("/logout", (req, res)=>{
+  delete req.session.user
+  res.redirect("/login")
+})
+
+app.get("/content", (req, res)=>{
+  ejs.renderFile(path.join(__dirname, "public", "loggedSections.ejs"), {name: req.session.user.username})
+})
+
+app.listen(port, ()=>{
   console.log("listening "+port)
 })
