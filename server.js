@@ -25,10 +25,10 @@ app.get("/login", (req, res)=>{
 
 app.post("/login", async (req, res)=>{
   const esitoDb = await mongoAction("login", req.body)
-  req.session.user={
+  esitoDb && (req.session.user={
     username: esitoDb.username
-  }
-  res.send(`Logged as ${esitoDb ? esitoDb : "none"}`)
+  })
+  res.send(`Logged as ${esitoDb ? esitoDb.username : "none"}`)
 })
 
 app.listen(()=>{
