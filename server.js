@@ -108,13 +108,17 @@ function isLoggedIn(req, res, next) {
   res.redirect('/login');
 }
 
-// Close MongoDB connection middleware
+// Middleware to close the MongoDB connection after handling the request
 app.use((req, res, next) => {
-  if (req.db) {
-    req.db.close()
-      .then(() => console.log('MongoDB connection closed'))
-      .catch(err => console.error('Error closing MongoDB connection:', err));
-  }
+  // Move on to the next middleware or route handler before closing the connection
+  res.on('finish', () => {
+    if (req.db) {
+      req.db.close()
+        .then(() => console.log('MongoDB connection closed'))
+        .catch(err => console.error('Error closing MongoDB connection:', err));
+    }
+  });
+  next();
 });
 
 app.listen(port, () => {
