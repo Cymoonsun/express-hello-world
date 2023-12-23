@@ -25,7 +25,7 @@ passport.deserializeUser((id, done) => {
   const client = new MongoClient(uri);
 
   client.connect()
-    .then(() => client.db().collection('users').findOne({ _id: new ObjectId(id) }))
+    .then(() => client.db().collection('DnDUsers').findOne({ _id: new ObjectId(id) }))
     .then(user => {
       client.close();
       done(null, user);
@@ -43,7 +43,7 @@ passport.use(new LocalStrategy(
     const client = new MongoClient(uri);
 
     client.connect()
-      .then(() => client.db().collection('users').findOne({ username, password }))
+      .then(() => client.db().collection('DnDUsers').findOne({ username, password }))
       .then(user => {
         client.close();
         if (!user) {
