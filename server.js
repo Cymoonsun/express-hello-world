@@ -1,54 +1,164 @@
-const express = require ("express")
-const session = require ("express-session")
-const path = require ("path")
-const ejs = require ("ejs")
-const mongoAction = require("./userHandler")
-const port = 3000
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import express from 'express';
+import session from 'express-session';
+import path from 'path';
+import queryString from 'querystring';
+import multer from "multer"
+import mongoAction from './userHandler.js';
 
-const app = express()
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const port = 3000;
+const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(session({
-  saveUninitialized: false,
-  resave: false,
-  secret: process.env.SESSION_SECRET || "secretCat"
-}))
+const upload = multer({
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 4MB limit
+  },
+  fileFilter(req, file, cb) {
+    if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+      return cb(new Error('Please upload an image file.'));
+    }
 
-app.use((req, res, next)=>{
-  if (!req.session.user && req.path !== "/login") {
-    return res.redirect("/login");
+    cb(undefined, true);
+  }
+});
+
+app.use(
+  session({
+    saveUninitialized: false,
+    resave: false,
+    secret: process.env.SESSION_SECRET,
+  })
+);
+
+app.use((req, res, next) => {
+  if (!req.session.user && !req.path.startsWith('/login') && !req.path.startsWith('/signup')) {
+    return res.redirect('/login');
   }
   next();
-})
+});
 
-app.get("/login", (req, res)=>{
-  if(req.session.user){
-    res.sendFile(path.join(__dirname, "public", "loggedSection.html"))
+app.get('/login', (req, res) => {
+  if (req.session.user) {
+    return res.redirect('/content');
   }
-  res.sendFile(path.join(__dirname, "public", "login.html"))
+  res.sendFile(path.join(__dirname, 'public', 'authHandler', 'login.html'));
+});
+
+app.post('/login', async (req, res) => {
+  let result = await mongoAction('login', req.body);
+  if (result.result) {
+    req.session.user = {
+      username: req.body.username
+    };
+    res.redirect('/content');
+  } else {
+    const query = queryString.stringify(result);
+    res.redirect(`${result.data?.redirectTo}?${query}`);
+  }
+});
+
+app.get('/signup', (req, res) => {
+  if (req.session.user) {
+    return res.redirect('/content');
+  }
+  res.sendFile(path.join(__dirname, 'public', 'authHandler', 'signup.html'));
+});
+
+app.post('/signup', async (req, res) => {
+  let result = await mongoAction('signup', req.body);
+  if (result.result) {
+    req.session.user = {
+      username: req.body.username
+    };
+    res.redirect('/content');
+  } else {
+    const query = queryString.stringify(result);
+    res.redirect(`${result.data.redirectTo}?${query}`);
+  }
+});
+
+app.get('/logout', (req, res) => {
+  delete req.session.user;
+  res.redirect('/login');
+});
+
+function requireLogin(req, res, next) {
+  if (req.session.user) {
+    next();
+  } else {
+    res.redirect('/login');
+  }
+}
+
+app.use(['/content',
+ '/api/user',
+ "/user/uploadPic",
+ "/getPicFlow",
+ "/sendFriendRequest", 
+ "/getFriendRequests", 
+ "/getFriends"], requireLogin);
+
+app.get('/content', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'loggedSections', 'loggedSections.html'));
+});
+
+app.get('/api/user', (req, res) => {
+  if (!req.session.user) return res.send(null);
+  return res.json(req.session.user);
+});
+
+app.post('/user/uploadPic', upload.single('upPic'), async (req, res) => {
+  if(!req.session.user) return res.send("u criminal scum")
+  const mongoResult = await mongoAction("uploadPic", req)
+  return res.json(mongoResult)
+});
+
+app.get("/getPicFlow", async (req, res)=>{
+  const mongoResult = await mongoAction("getAllPics", req)
+  res.json(mongoResult)
 })
 
-app.post("/login", async (req, res)=>{
-  mongoAction("login", req.body).then((result)=>{
-    console.log(result)
-    result && (req.session.user={
-      username: result.username
-    })
-    res.send(`Logged as ${result ? result.username : "none"}`)
-  })
+app.get("/getFriendRequests", (req, res)=>{
+  
 })
 
-app.get("/logout", (req, res)=>{
-  delete req.session.user
-  res.redirect("/login")
+app.post("/sendFriendRequest", async (req, res)=>{
+  const mongoResult = await mongoAction("sendFriendRequest", req)
+  res.json(mongoResult)
 })
 
-app.get("/content", (req, res)=>{
-  ejs.renderFile(path.join(__dirname, "public", "loggedSections.ejs"), {name: req.session.user.username})
+app.get("/getFriends"), async (req, res)=>{
+  const mongoResult = await mongoAction("getFriends", req)
+  res.json(mongoResult)
+}
+
+app.get("/media/:name",(req, res)=>{
+  res.sendFile(path.join(__dirname,"media",req.params.name))
 })
 
-app.listen(port, ()=>{
-  console.log("listening "+port)
+app.post("/sendGuess", async (req, res)=>{
+  const mongoResult = await mongoAction("sendGuess", req)
+  res.json(mongoResult)
 })
+
+app.get("/*", (req, res) => {
+  if (!req.path.includes(".")) {
+    const custom404PagePath = path.join(__dirname, "public", "404.html");
+    res.status(404).sendFile(custom404PagePath);
+  } else {
+    res.status(404).send('Not Found');
+  }
+});
+
+app.listen(port, () => {
+  console.log('listening ' + port);
+});
+

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Signup Page</title>
+</head>
+<body>
+  <div class="flex justify-center items-center h-screen bg-sky-950">
+    <div class="flex flex-col gap-5 text-white rounded-lg shadow-2xl p-5 border border-neutral-800">
+      <h1 class="text-center font-bold">Volto nuovo, ciao dude!</h1>
+      <form action="/signup" method="POST" class="flex flex-col gap-1">
+        <label for="username">Username:</label>
+        <input class="bg-transparent border-b border-b-stone-300 focus:outline-none" type="text" id="username" name="username" required>
+        <br>
+        <label for="password">Password:</label>
+        <input class="bg-transparent border-b border-b-stone-300 focus:outline-none" type="password" id="password" name="password" required>
+        <br>
+        <button type="submit">Signup</button>
+      </form>
+      <div class="grid grid-cols-3 gap-2">
+        
+      </div>
+      <h1 id="errorMessage" class="font-bold text-red-600 text-center">
+        
+      </h1>
+      <!-- JavaScript for redirection -->
+      <script>
+        function redirectToLogin() {
+          window.location.href = "/login";
+        }
+        var search = location.search.substring(1);
+        let objHref = JSON.parse('{"' + search.replace(/&/g, '","').replace(/=/g,'":"') + '"}', function(key, value) { return key===""?value:decodeURIComponent(value) })
+        if(objHref.message){
+          document.querySelector("#errorMessage").innerHTML = objHref.message
+        }
+      </script>
+      <button onclick="redirectToLogin()">Go to Login</button>
+    </div>
+  </div>
+</body>
+</html>
