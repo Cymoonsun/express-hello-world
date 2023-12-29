@@ -16,6 +16,7 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
+app.set('trust proxy', 1);
 
 const upload = multer({
   limits: {
@@ -37,7 +38,7 @@ app.use(
     secret: process.env.SESSION_SECRET,
     cookie:{
       domain: 'cyclic.app',
-      secure: false
+      secure: true
     }
   })
 );
