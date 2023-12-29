@@ -35,6 +35,10 @@ app.use(
     saveUninitialized: false,
     resave: false,
     secret: process.env.SESSION_SECRET,
+    cookie:{
+      domain: 'cyclic.app',
+      secure: false
+    }
   })
 );
 
