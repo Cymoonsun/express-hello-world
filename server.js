@@ -45,7 +45,6 @@ app.use(
     secret: process.env.SESSION_SECRET,
     name: 'SuperCoolSession',
     cookie:{
-      domain: 'cyclic.app',
       secure: true,
       sameSite: 'none',
       maxAge: 1000 * 60 * 60 * 48,
