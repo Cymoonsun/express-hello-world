@@ -5,15 +5,18 @@ import session from 'express-session';
 import path from 'path';
 import queryString from 'querystring';
 import cors from "cors"
+import cookieParser from "cookie-parser"
 import multer from "multer"
 import mongoAction from './userHandler.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+let MemoryStore = session.MemoryStore
 
 const port = 3000;
 const app = express();
 
+app.use(cookieParser())
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -48,6 +51,7 @@ app.use(
       secure: true,
       sameSite: 'none',
       maxAge: 1000 * 60 * 60 * 48,
+      store: new MemoryStore(),
       httpOnly: false
     }
   })
