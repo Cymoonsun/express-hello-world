@@ -33,12 +33,16 @@ const upload = multer({
 
 app.use(
   session({
-    saveUninitialized: false,
+    saveUninitialized: true,
     resave: false,
     secret: process.env.SESSION_SECRET,
+    name: 'SuperCoolSession',
     cookie:{
       domain: 'cyclic.app',
-      secure: true
+      secure: true,
+      sameSite: 'none',
+      maxAge: 1000 * 60 * 60 * 48,
+      httpOnly: false
     }
   })
 );
