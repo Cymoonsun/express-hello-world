@@ -4,6 +4,7 @@ import express from 'express';
 import session from 'express-session';
 import path from 'path';
 import queryString from 'querystring';
+import cors from "cors"
 import multer from "multer"
 import mongoAction from './userHandler.js';
 
@@ -17,6 +18,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.set('trust proxy', true);
+
+const corsOptions = {
+  origin: '*',
+  credentials: true };
+
+app.use(cors(corsOptions));
 
 const upload = multer({
   limits: {
@@ -39,7 +46,7 @@ app.use(
     name: 'SuperCoolSession',
     cookie:{
       domain: 'cyclic.app',
-      secure: false,
+      secure: true,
       sameSite: 'none',
       maxAge: 1000 * 60 * 60 * 48,
       httpOnly: false
