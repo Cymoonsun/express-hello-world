@@ -6,6 +6,7 @@ import path from 'path';
 import queryString from 'querystring';
 import cors from "cors"
 import cookieParser from "cookie-parser"
+import MongoStore from 'express-session-mongo'
 import multer from "multer"
 import mongoAction from './userHandler.js';
 
@@ -51,7 +52,7 @@ app.use(
       secure: true,
       sameSite: 'none',
       maxAge: 1000 * 60 * 60 * 48,
-      store: new MemoryStore(),
+      store: new MongoStore({ url: process.env.MONGO_CONNECTION_STRING }),
       httpOnly: false
     }
   })
