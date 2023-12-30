@@ -155,10 +155,11 @@ app.post("/sendFriendRequest", async (req, res)=>{
   res.json(mongoResult)
 })
 
-app.get("/getFriends"), async (req, res)=>{
-  const mongoResult = await mongoAction("getFriends", req)
-  res.json(mongoResult)
-}
+app.get("/getFriends", async (req, res) => {
+  const mongoResult = await mongoAction("getFriends", req);
+  res.json(mongoResult);
+});
+
 
 app.get("/media/:name",(req, res)=>{
   res.sendFile(path.join(__dirname,"media",req.params.name))
