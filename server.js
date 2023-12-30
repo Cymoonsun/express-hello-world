@@ -6,7 +6,6 @@ import path from 'path';
 import queryString from 'querystring';
 import cors from "cors"
 import cookieParser from "cookie-parser"
-import MongoStore from 'express-session-mongo'
 import multer from "multer"
 import mongoAction from './userHandler.js';
 
@@ -52,7 +51,7 @@ app.use(
       secure: true,
       sameSite: 'none',
       maxAge: 1000 * 60 * 60 * 48,
-      store: new MongoStore({ url: process.env.MONGO_CONNECTION_STRING }),
+      store: new MemoryStore(),
       httpOnly: false
     }
   })
@@ -155,11 +154,10 @@ app.post("/sendFriendRequest", async (req, res)=>{
   res.json(mongoResult)
 })
 
-app.get("/getFriends", async (req, res) => {
-  const mongoResult = await mongoAction("getFriends", req);
-  res.json(mongoResult);
-});
-
+app.get("/getFriends"), async (req, res)=>{
+  const mongoResult = await mongoAction("getFriends", req)
+  res.json(mongoResult)
+}
 
 app.get("/media/:name",(req, res)=>{
   res.sendFile(path.join(__dirname,"media",req.params.name))
